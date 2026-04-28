@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>雏鹰班 - 团队成长音频课程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0a4d2e 0%, #0d7a3d 50%, #0a4d2e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* 动态背景粒子 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部 Logo 区域 */
+        .header {
+            text-align: center;
+            padding: 30px 0;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .logo-wrapper {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 20px;
+            position: relative;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .logo-wrapper img {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255,255,255,0.2); }
+            50% { box-shadow: 0 0 40px rgba(255,255,255,0.4); }
+        }
+
+        .brand-title {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .brand-subtitle {
+            font-size: 14px;
+            opacity: 0.8;
+            letter-spacing: 2px;
+        }
+
+        /* 音频卡片 */
+        .audio-section {
+            margin-top: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 10px;
+            border-left: 4px solid #fff;
+        }
+
+        .audio-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        .audio-card:nth-child(2) { animation-delay: 0.2s; }
+        .audio-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .audio-card:active {
+            transform: scale(0.98);
+        }
+
+        .audio-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .audio-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0, 200, 83, 0.4);
+            flex-shrink: 0;
+        }
+
+        .audio-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .audio-info p {
+            font-size: 13px;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        /* 音频波形动画 */
+        .waveform {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 40px;
+            margin: 15px 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .waveform.active {
+            opacity: 1;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: linear-gradient(to top, #00c853, #69f0ae);
+            border-radius: 2px;
+            animation: wave 1s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { height: 20%; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 40%; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 60%; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 80%; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 100%; animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { height: 80%; animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { height: 60%; animation-delay: 0.6s; }
+        .wave-bar:nth-child(8) { height: 40%; animation-delay: 0.7s; }
+        .wave-bar:nth-child(9) { height: 20%; animation-delay: 0.8s; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* 播放控制 */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .play-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00c853, #00e676);
+            border: none;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(0, 200, 83, 0.4);
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .play-btn:active {
+            transform: scale(0.9);
+        }
+
+        .progress-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00c853, #69f0ae);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            right: -6px;
+            top: -3px;
+            width: 12px;
+            height: 12px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .time-display {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* 音频标签 */
+        .tags {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* 底部 */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            opacity: 0.6;
+            font-size: 12px;
+        }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 提示 */
+        .tip {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 20px 0;
+            font-size: 13px;
+            line-height: 1.6;
+            border-left: 3px solid #69f0ae;
+        }
+
+        /* 响应式 */
+        @media (max-width: 380px) {
+            .brand-title { font-size: 24px; }
+            .audio-card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景粒子 -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="logo-wrapper">
+                <img src="https://beauty12-1349771651.cos.ap-shanghai.myqcloud.com/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20260428144253.jpg" alt="雏鹰班 Logo">
+            </div>
+            <h1 class="brand-title">雏鹰班</h1>
+            <p class="brand-subtitle">团队成长 · 展翅高飞</p>
+        </div>
+
+        <!-- 提示 -->
+        <div class="tip">
+            🎧 点击播放按钮收听团队管理精品课程。建议在 Wi-Fi 环境下收听以获得最佳体验。
+        </div>
+
+        <!-- 音频区域 -->
+        <div class="audio-section">
+            <div class="section-title">
+                <span>📚</span>
+                <span>核心课程</span>
+            </div>
+
+            <!-- 音频卡片 1：带队八法 -->
+            <div class="audio-card">
+                <div class="audio-header">
+                    <div class="audio-icon">🦅</div>
+                    <div class="audio-info">
+                        <h3>带队八法</h3>
+                        <p>组织 · 带动 · 凝聚 · 学习 · 分享 · 激励 · 造梦 · 指引</p>
+                    </div>
+                </div>
+
+                <div class="waveform" id="waveform1">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="play-btn" onclick="togglePlay(1)" id="playBtn1">▶</button>
+                    <div class="progress-wrapper">
+                        <div class="progress-bar" onclick="seek(event, 1)">
+                            <div class="progress-fill" id="progress1"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="current1">00:00</span>
+                            <span id="duration1">00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">团队管理</span>
+                    <span class="tag">领导力</span>
+                    <span class="tag">实战经验</span>
+                </div>
+
+                <audio id="audio1" preload="metadata">
+                    <source src="https://beauty12-1349771651.cos.ap-shanghai.myqcloud.com/%E5%B8%A6%E9%98%9F%E5%85%AB%E6%B3%95.m4a" type="audio/mp4">
+                </audio>
+            </div>
+
+            <!-- 音频卡片 2：五度提升 -->
+            <div class="audio-card">
+                <div class="audio-header">
+                    <div class="audio-icon" style="background: linear-gradient(135deg, #2979ff, #448aff); box-shadow: 0 4px 15px rgba(41, 121, 255, 0.4);">🚀</div>
+                    <div class="audio-info">
+                        <h3>五度提升</h3>
+                        <p>速度 · 力度 · 高度 · 忠诚度 · 美誉度</p>
+                    </div>
+                </div>
+
+                <div class="waveform" id="waveform2">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+
+                <div class="controls">
+                    <button class="play-btn" style="background: linear-gradient(135deg, #2979ff, #448aff); box-shadow: 0 4px 20px rgba(41, 121, 255, 0.4);" onclick="togglePlay(2)" id="playBtn2">▶</button>
+                    <div class="progress-wrapper">
+                        <div class="progress-bar" onclick="seek(event, 2)">
+                            <div class="progress-fill" id="progress2"></div>
+                        </div>
+                        <div class="time-display">
+                            <span id="current2">00:00</span>
+                            <span id="duration2">00:00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tags">
+                    <span class="tag">市场开发</span>
+                    <span class="tag">个人成长</span>
+                    <span class="tag">平台忠诚</span>
+                </div>
+
+                <audio id="audio2" preload="metadata">
+                    <source src="https://beauty12-1349771651.cos.ap-shanghai.myqcloud.com/%E4%BA%94%E5%BA%A6%E6%8F%90%E5%8D%87.m4a" type="audio/mp4">
+                </audio>
+            </div>
+        </div>
+
+        <!-- 底部 -->
+        <div class="footer">
+            <p>雏鹰班 · 让每一次成长都有迹可循</p>
+            <p style="margin-top: 8px;">长按识别二维码关注更多课程</p>
+        </div>
+    </div>
+
+    <script>
+        // 生成背景粒子
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // 音频控制
+        let currentPlaying = null;
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return '00:00';
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return String(mins).padStart(2, '0') + ':' + String(secs).padStart(2, '0');
+        }
+
+        function togglePlay(id) {
+            const audio = document.getElementById('audio' + id);
+            const btn = document.getElementById('playBtn' + id);
+            const waveform = document.getElementById('waveform' + id);
+
+            // 如果点击的是当前正在播放的音频
+            if (currentPlaying === id) {
+                audio.pause();
+                btn.innerHTML = '▶';
+                waveform.classList.remove('active');
+                currentPlaying = null;
+                return;
+            }
+
+            // 暂停其他音频
+            if (currentPlaying !== null) {
+                const otherAudio = document.getElementById('audio' + currentPlaying);
+                const otherBtn = document.getElementById('playBtn' + currentPlaying);
+                const otherWaveform = document.getElementById('waveform' + currentPlaying);
+                otherAudio.pause();
+                otherBtn.innerHTML = '▶';
+                otherWaveform.classList.remove('active');
+            }
+
+            // 播放当前音频
+            audio.play().then(() => {
+                btn.innerHTML = '⏸';
+                waveform.classList.add('active');
+                currentPlaying = id;
+            }).catch(e => {
+                console.error('播放失败:', e);
+                alert('音频加载中，请稍后再试');
+            });
+        }
+
+        function seek(event, id) {
+            const audio = document.getElementById('audio' + id);
+            const progressBar = event.currentTarget;
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (event.clientX - rect.left) / rect.width;
+            if (audio.duration) {
+                audio.currentTime = percent * audio.duration;
+            }
+        }
+
+        // 为每个音频添加事件监听
+        [1, 2].forEach(id => {
+            const audio = document.getElementById('audio' + id);
+            const progress = document.getElementById('progress' + id);
+            const current = document.getElementById('current' + id);
+            const duration = document.getElementById('duration' + id);
+
+            audio.addEventListener('timeupdate', () => {
+                if (audio.duration) {
+                    const percent = (audio.currentTime / audio.duration) * 100;
+                    progress.style.width = percent + '%';
+                    current.textContent = formatTime(audio.currentTime);
+                }
+            });
+
+            audio.addEventListener('loadedmetadata', () => {
+                duration.textContent = formatTime(audio.duration);
+            });
+
+            audio.addEventListener('ended', () => {
+                document.getElementById('playBtn' + id).innerHTML = '▶';
+                document.getElementById('waveform' + id).classList.remove('active');
+                progress.style.width = '0%';
+                current.textContent = '00:00';
+                if (currentPlaying === id) currentPlaying = null;
+            });
+        });
+
+        // 防止页面滚动反弹
+        document.body.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.progress-bar')) return;
+        }, { passive: true });
+    </script>
+</body>
+</html>
